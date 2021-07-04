@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var http_1 = __importDefault(require("http"));
-var fs_1 = __importDefault(require("fs"));
+var fs_1 = require("fs");
 var path_1 = __importDefault(require("path"));
 var Methods;
 (function (Methods) {
@@ -13,63 +13,50 @@ var Methods;
     Methods["PATCH"] = "PATCH";
     Methods["DELETE"] = "DELETE";
 })(Methods || (Methods = {}));
-var readFile = function () { };
-var replaceFile = function () { };
-var updateFile = function () { };
-var deleteFile = function () { };
 var server = http_1.default.createServer(function (req, res) {
     var filePath = path_1.default.join(__dirname, 'public', req.url || '');
     switch (req.method) {
         case Methods.GET:
-            readFile();
-            fs_1.default.readFile(filePath, 'utf-8', function (err, data) {
-                if (err)
-                    throw err;
-                console.log('Get file');
-                res.end(data);
-            });
+            try {
+                fs_1.promises.readFile(filePath, 'utf-8')
+                    .then(function (data) { return res.end(data); });
+            }
+            catch (error) {
+                console.error(error.message);
+            }
             break;
         case Methods.POST:
-            replaceFile();
             var data_1 = '';
             req.on('data', function (chunk) { return data_1 += chunk; });
             req.on('end', function () {
-                fs_1.default.writeFile(filePath, data_1, function (err) {
-                    if (err)
-                        throw err;
-                    console.log('Write file');
-                    res.end('File succesfully changed');
-                });
+                try {
+                    fs_1.promises.writeFile(filePath, data_1)
+                        .then(function () { return res.end('File succesfully changed'); });
+                }
+                catch (error) {
+                    console.error(error.message);
+                }
             });
             break;
         case Methods.PATCH:
-            updateFile();
             var body_1 = '';
             req.on('data', function (chunk) { return body_1 += chunk; });
             req.on('end', function () {
-                fs_1.default.readFile(filePath, 'utf-8', function (err, data) {
-                    if (err)
-                        throw err;
-                    var old = JSON.parse(data);
-                    var ccc = JSON.parse(body_1);
-                    for (var k in ccc) {
-                        old[k] = ccc[k];
+                fs_1.promises.readFile(filePath, 'utf-8')
+                    .then(function (data) {
+                    var oldData = JSON.parse(data);
+                    var newData = JSON.parse(body_1);
+                    for (var key in newData) {
+                        oldData[key] = newData[key];
                     }
-                    fs_1.default.writeFile(filePath, JSON.stringify(old), function (err) {
-                        if (err)
-                            throw err;
-                        res.end('File succesfully updated');
-                    });
+                    fs_1.promises.writeFile(filePath, JSON.stringify(oldData, null, 2))
+                        .then(function () { return res.end('File succesfully updated'); });
                 });
             });
             break;
         case Methods.DELETE:
-            deleteFile();
-            fs_1.default.unlink(filePath, function (err) {
-                if (err)
-                    throw err;
-                res.end('File succesfully deleted');
-            });
+            fs_1.promises.unlink(filePath)
+                .then(function () { return res.end('File succesfully deleted'); });
             break;
         default:
             res.end();
