@@ -1,0 +1,18 @@
+{
+  "name": "nodejs_app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon dist/index.js"
+  },
+  "author": "darkgraycat",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^16.0.0",
+    "nodemon": "^2.0.9",
+    "typescript": "^4.3.5"
+  },
+  "dependencies": {},
+  "description": ""
+}
