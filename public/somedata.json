@@ -1,9 +1,6 @@
 {
-  "data": "some new data",
-  "id": 777,
-  "body": {
-    "a": 20,
-    "b": 40
-  },
-  "another": "data"
+  "another_another": "data",
+  "another_another_1": "data",
+  "another_another_2": "data",
+  "another_another_3": "data"
 }

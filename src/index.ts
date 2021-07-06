@@ -12,23 +12,20 @@ const server: Server = http.createServer((req, res) => {
 
   switch (req.method) {
 
-    case Methods.GET:
-      read(req).then(data => res.end(data))
+    case Methods.GET: read(req, res)
       break
 
-    case Methods.POST:
-      write(req).then(() => res.end('File succesfully changed'))
+    case Methods.POST: write(req, res)
       break
 
-    case Methods.PATCH:
-      append(req).then(() => res.end('File succesfully updated'))
+    case Methods.PATCH: append(req, res)
       break
 
-    case Methods.DELETE:
-      remove(req).then(() => res.end('File succesfully removed'))
+    case Methods.DELETE: remove(req, res)
       break
 
     default:
+      res.statusCode = 200
       res.end()
   }
 
