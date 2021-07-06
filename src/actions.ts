@@ -15,7 +15,7 @@ async function read(req: IncomingMessage, res: ServerResponse): Promise<string> 
   } catch (err) {
     console.error(err.message)
     res.statusCode = 404
-    res.end()
+    res.end('Error')
     return ''
   }
 }
@@ -27,12 +27,12 @@ async function write(req: IncomingMessage, res: ServerResponse): Promise<void> {
     req.on('end', async () => {
       await fs.writeFile(parsePath(req), data)
       res.statusCode = 200
-      res.end()
+      res.end('File writted')
     })
   } catch (err) {
     console.error(err.message)
     res.statusCode = 404
-    res.end()
+    res.end('Error')
   }
 }
 
@@ -46,12 +46,12 @@ async function append(req: IncomingMessage, res: ServerResponse): Promise<void> 
       const total: Object = { ...JSON.parse(file), ...JSON.parse(data) }
       await fs.writeFile(filePath, JSON.stringify(total, null, 2))
       res.statusCode = 200
-      res.end()
+      res.end('File updated')
     })
   } catch (err) {
     console.error(err.message)
     res.statusCode = 404
-    res.end()
+    res.end('Error')
   }
 }
 
@@ -59,11 +59,11 @@ async function remove(req: IncomingMessage, res: ServerResponse): Promise<void> 
   try {
     await fs.unlink(parsePath(req))
     res.statusCode = 200
-    res.end()
+    res.end('File removed')
   } catch (err) {
     console.error(err.message)
     res.statusCode = 404
-    res.end()
+    res.end('Error')
   }
 }
 
