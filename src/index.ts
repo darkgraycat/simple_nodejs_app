@@ -25,8 +25,8 @@ const server: Server = http.createServer((req, res) => {
       break
 
     default:
-      res.statusCode = 200
-      res.end()
+      res.writeHead(400, { 'Content-Type': 'text/plain' })
+      res.end('Bad request')
   }
 
 })
