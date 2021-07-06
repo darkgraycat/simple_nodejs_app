@@ -25,8 +25,8 @@ const server: Server = http.createServer((req, res) => {
       break
 
     default:
-      res.writeHead(400, { 'Content-Type': 'text/plain' })
-      res.end('Bad request')
+      res.writeHead(405, { 'Content-Type': 'text/plain' })
+      res.end('Method not allowed')
   }
 
 })

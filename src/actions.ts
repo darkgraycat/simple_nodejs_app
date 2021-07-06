@@ -4,17 +4,15 @@ import path from 'path'
 
 const parsePath = (req: IncomingMessage): string => path.join(__dirname, '../public', req.url || '')
 
-async function read(req: IncomingMessage, res: ServerResponse): Promise<string> {
+async function read(req: IncomingMessage, res: ServerResponse): Promise<void> {
   try {
     const data = await fs.readFile(parsePath(req), 'utf-8')
     res.writeHead(200, { 'Content-Type': 'application/json' })
     res.end(data)
-    return data
   } catch (err) {
     console.error(err.message)
     res.writeHead(404, { 'Content-Type': 'text/plain' })
     res.end('Error reading file')
-    return ''
   }
 }
 
@@ -24,12 +22,12 @@ async function write(req: IncomingMessage, res: ServerResponse): Promise<void> {
     req.on('data', chunk => data += chunk)
     req.on('end', async () => {
       await fs.writeFile(parsePath(req), data)
-      res.writeHead(200, { 'Content-Type': 'text/plain' })
+      res.writeHead(201, { 'Content-Type': 'text/plain' })
       res.end('File writted')
     })
   } catch (err) {
     console.error(err.message)
-    res.writeHead(404, { 'Content-Type': 'text/plain' })
+    res.writeHead(500, { 'Content-Type': 'text/plain' })
     res.end('Error writting file')
   }
 }
@@ -48,7 +46,7 @@ async function append(req: IncomingMessage, res: ServerResponse): Promise<void> 
     })
   } catch (err) {
     console.error(err.message)
-    res.writeHead(404, { 'Content-Type': 'text/plain' })
+    res.writeHead(400, { 'Content-Type': 'text/plain' })
     res.end('Error updating file')
   }
 }
@@ -60,7 +58,7 @@ async function remove(req: IncomingMessage, res: ServerResponse): Promise<void> 
     res.end('File removed')
   } catch (err) {
     console.error(err.message)
-    res.writeHead(404, { 'Content-Type': 'text/plain' })
+    res.writeHead(400, { 'Content-Type': 'text/plain' })
     res.end('Error deleting file')
   }
 }
