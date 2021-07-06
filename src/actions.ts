@@ -7,15 +7,13 @@ const parsePath = (req: IncomingMessage): string => path.join(__dirname, '../pub
 async function read(req: IncomingMessage, res: ServerResponse): Promise<string> {
   try {
     const data = await fs.readFile(parsePath(req), 'utf-8')
-    res.writeHead(200, {
-      'Content-Type': 'application/json'
-    })
+    res.writeHead(200, { 'Content-Type': 'application/json' })
     res.end(data)
     return data
   } catch (err) {
     console.error(err.message)
-    res.statusCode = 404
-    res.end('Error')
+    res.writeHead(404, { 'Content-Type': 'text/plain' })
+    res.end('Error reading file')
     return ''
   }
 }
@@ -26,13 +24,13 @@ async function write(req: IncomingMessage, res: ServerResponse): Promise<void> {
     req.on('data', chunk => data += chunk)
     req.on('end', async () => {
       await fs.writeFile(parsePath(req), data)
-      res.statusCode = 200
+      res.writeHead(200, { 'Content-Type': 'text/plain' })
       res.end('File writted')
     })
   } catch (err) {
     console.error(err.message)
-    res.statusCode = 404
-    res.end('Error')
+    res.writeHead(404, { 'Content-Type': 'text/plain' })
+    res.end('Error writting file')
   }
 }
 
@@ -45,25 +43,25 @@ async function append(req: IncomingMessage, res: ServerResponse): Promise<void> 
       const file: string = await fs.readFile(filePath, 'utf-8')
       const total: Object = { ...JSON.parse(file), ...JSON.parse(data) }
       await fs.writeFile(filePath, JSON.stringify(total, null, 2))
-      res.statusCode = 200
+      res.writeHead(200, { 'Content-Type': 'text/plain' })
       res.end('File updated')
     })
   } catch (err) {
     console.error(err.message)
-    res.statusCode = 404
-    res.end('Error')
+    res.writeHead(404, { 'Content-Type': 'text/plain' })
+    res.end('Error updating file')
   }
 }
 
 async function remove(req: IncomingMessage, res: ServerResponse): Promise<void> {
   try {
     await fs.unlink(parsePath(req))
-    res.statusCode = 200
+    res.writeHead(200, { 'Content-Type': 'text/plain' })
     res.end('File removed')
   } catch (err) {
     console.error(err.message)
-    res.statusCode = 404
-    res.end('Error')
+    res.writeHead(404, { 'Content-Type': 'text/plain' })
+    res.end('Error deleting file')
   }
 }
 
