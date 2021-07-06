@@ -2,7 +2,7 @@ import { IncomingMessage, ServerResponse } from 'http'
 import { promises as fs } from 'fs'
 import path from 'path'
 
-const parsePath = (req: IncomingMessage): string => path.join(__dirname, 'public', req.url || '')
+const parsePath = (req: IncomingMessage): string => path.join(__dirname, '../public', req.url || '')
 
 async function read(req: IncomingMessage): Promise<string> {
   try {
@@ -29,14 +29,10 @@ async function append(req: IncomingMessage): Promise<void> {
     let data: string = ''
     req.on('data', chunk => data += chunk)
     req.on('end', async () => {
-      const filePath = parsePath(req)
-      const file = await fs.readFile(filePath, 'utf-8')
-      const parsedFile = JSON.parse(file)
-      const parsedData = JSON.parse(data)
-      for (let key in parsedData) {
-        parsedFile[key] = parsedData[key]
-      }
-      fs.writeFile(filePath, JSON.stringify(parsedFile, null, 2))
+      const filePath: string = parsePath(req)
+      const file: string = await fs.readFile(filePath, 'utf-8')
+      const total: Object = { ...JSON.parse(file), ...JSON.parse(data) }
+      fs.writeFile(filePath, JSON.stringify(total, null, 2))
     })
   } catch (err) {
     console.error(err.message)
